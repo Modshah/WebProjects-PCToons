@@ -1,6 +1,5 @@
 from django.db import models
 
-from django.db import models
 
 
 class Product(models.Model):
@@ -13,4 +12,5 @@ class Product(models.Model):
 
 class User(models.Model):
     pass
+
 

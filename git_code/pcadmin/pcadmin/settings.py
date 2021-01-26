@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'pcadmin.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'manage.py',
+        'NAME': 'pareshtoon',
         'USER': 'pareshtoon',
         'PASSWORD': 'ITACHI@21',
         'HOST': 'LOCALHOST',

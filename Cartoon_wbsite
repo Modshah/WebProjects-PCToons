@@ -18,3 +18,46 @@ Admin Panel
 Web hosting:
 	https://docs.microsoft.com/en-us/learn/paths/deploy-a-website-with-azure-app-service/
 	
+	
+	
+	
+	
+	
+	
+	
+#########################################################################################################
+https://stackoverflow.com/questions/39478482/how-to-create-development-branch-from-master-on-github	
+
+git pull https://github.com/Modshah/WebProjects-PCToons.git --allow-unrelated-histories
+
+all branches:
+	git branch -a
+Create a new branch:
+	git checkout -b branch_name
+	
+Switch to branch:
+	git checkout branch_name
+	
+Commit changes:
+	git add .
+	git commit -m "whatever"
+	
+	git push -u origin develop
+	
+	
+###############################################################################################################
+FLASK:
+
+pip install Flask
+
+pip install Flask-SQLAlchemy	
+
+pip install Flask-Cors
+
+###############################################################################################################
+DJANGO:
+pip install django-cors-headers
+pip install djangorestframework
+pip install markdown       # Markdown support for the browsable API.
+pip install django-filter
+pip install mysqlclient
