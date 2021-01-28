@@ -9,8 +9,8 @@ class Product(models.Model):
     likes = models.PositiveIntegerField(default=0)
     image_path = models.CharField(max_length=500)
     tags = models.CharField(max_length=500)
+    img = models.ImageField(upload_to='img/')
 
 
 class User(models.Model):
     pass
-
