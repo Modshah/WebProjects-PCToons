@@ -1,97 +1,82 @@
-from flask import Flask
-from flask_restful import Api, Resource, reqparse, abort, fields, marshal_with
+from flask import Flask, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate, MigrateCommand
-from flask_script import Manager
+from sqlalchemy import UniqueConstraint
+import requests
+from flask import Flask, render_template, request
+from flask_mysqldb import MySQL
 
 app = Flask(__name__)
-api = Api(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql://pareshtoon:ITACHI@21@localhost/pareshtoon'
-db = SQLAlchemy(app)
 
 
-migrate = Migrate(app, db)
-manager = Manager(app)
-
-manager.add_command('db', MigrateCommand)
-
-
-
-class VideoModel(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    views = db.Column(db.Integer, nullable=False)
-    likes = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return f"Video(name = {name}, views = {views}, likes = {likes})"
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'pareshtoon'
+app.config['MYSQL_PASSWORD'] = 'ITACHI@21'
+app.config['MYSQL_DB'] = 'pareshtoon'
+mysql = MySQL(app)
 
 
-video_put_args = reqparse.RequestParser()
-video_put_args.add_argument("name", type=str, help="Name of the video is required", required=True)
-video_put_args.add_argument("views", type=int, help="Views of the video", required=True)
-video_put_args.add_argument("likes", type=int, help="Likes on the video", required=True)
-
-video_update_args = reqparse.RequestParser()
-video_update_args.add_argument("name", type=str, help="Name of the video is required")
-video_update_args.add_argument("views", type=int, help="Views of the video")
-video_update_args.add_argument("likes", type=int, help="Likes on the video")
-
-resource_fields = {
-    'id': fields.Integer,
-    'name': fields.String,
-    'views': fields.Integer,
-    'likes': fields.Integer
-}
 
 
-class Video(Resource):
-    @marshal_with(resource_fields)
-    def get(self, video_id):
-        result = VideoModel.query.filter_by(id=video_id).first()
-        if not result:
-            abort(404, message="Could not find video with that id")
-        return result
-
-    @marshal_with(resource_fields)
-    def put(self, video_id):
-        args = video_put_args.parse_args()
-        result = VideoModel.query.filter_by(id=video_id).first()
-        if result:
-            abort(409, message="Video id taken...")
-
-        video = VideoModel(id=video_id, name=args['name'], views=args['views'], likes=args['likes'])
-        db.session.add(video)
-        db.session.commit()
-        return video, 201
-
-    @marshal_with(resource_fields)
-    def patch(self, video_id):
-        args = video_update_args.parse_args()
-        result = VideoModel.query.filter_by(id=video_id).first()
-        if not result:
-            abort(404, message="Video doesn't exist, cannot update")
-
-        if args['name']:
-            result.name = args['name']
-        if args['views']:
-            result.views = args['views']
-        if args['likes']:
-            result.likes = args['likes']
-
-        db.session.commit()
-
-        return result
-
-    def delete(self, video_id):
-        abort_if_video_id_doesnt_exist(video_id)
-        del videos[video_id]
-        return '', 204
+@app.route('/users')
+def users():
+    cur = mysql.connection.cursor()
+    resultValue = cur.execute(" select a.* from (select * from padmin_product order by id desc) as a  limit 1")
+    if resultValue > 0:
+        userDetails = cur.fetchone()
+        assert isinstance(userDetails, object)
+        response = jsonify(userDetails)
+        return response
+        #return render_template('users.html',userDetails=userDetails)
 
 
-api.add_resource(Video, "/video/<int:video_id>")
+#CORS(app)
+#
+# db = SQLAlchemy(app)
+#
+#
+# @dataclass
+# class Product(db.Model):
+#     id: int
+#     title: str
+#     image: str
+#
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=False)
+#     title = db.Column(db.String(200))
+#     image = db.Column(db.String(200))
+#
+#
+# @dataclass
+# class ProductUser(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer)
+#     product_id = db.Column(db.Integer)
+#
+#     UniqueConstraint('user_id', 'product_id', name='user_product_unique')
+#
+#
+# @app.route('/api/products')
+# def index():
+#     return jsonify(Product.query.all())
+#
+#
+# @app.route('/api/products/<int:id>/like', methods=['POST'])
+# def like(id):
+#     req = requests.get('http://docker.for.mac.localhost:8000/api/user')
+#     json = req.json()
+#
+#     try:
+#         productUser = ProductUser(user_id=json['id'], product_id=id)
+#         db.session.add(productUser)
+#         db.session.commit()
+#
+#         publish('product_liked', id)
+#     except:
+#         abort(400, 'You already liked this product')
+#
+#     return jsonify({
+#         'message': 'success'
+#     })
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-    #manager.run(debug=True, host='0.0.0.0')
-    #manager.run()
