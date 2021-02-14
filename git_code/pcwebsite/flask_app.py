@@ -20,10 +20,11 @@ mysql = MySQL(app)
 @app.route('/users')
 def users():
     cur = mysql.connection.cursor()
-    resultValue = cur.execute(" select a.* from (select * from padmin_product order by id desc) as a  limit 1")
+    resultValue = cur.execute("select * from tags")
     if resultValue > 0:
-        userDetails = cur.fetchone()
+        userDetails = cur.fetchall()
         assert isinstance(userDetails, object)
+        print(userDetails)
         response = jsonify(userDetails)
         return response
         #return render_template('users.html',userDetails=userDetails)

@@ -1,13 +1,18 @@
 from datetime import time
 
 import requests
+from django import forms
+from django.contrib.auth.models import AbstractUser
 from PIL import Image, ImageDraw, ImageFont
+from .tag_selection import tags_choice
 from django.contrib.auth.models import User
 import os
+from datetime import datetime
 import sys
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_init
+from multiselectfield import MultiSelectField
 
 
 class Product(models.Model):
@@ -15,20 +20,23 @@ class Product(models.Model):
     image = models.CharField(max_length=200)
     likes = models.PositiveIntegerField(default=0)
     image_path = models.CharField(max_length=500)
-    tags = models.CharField(max_length=500)
     img = models.ImageField(upload_to='img/')
+    choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
+    tags = models.CharField(max_length=50, choices=tuple(tags_choice()))
+    caption = models.CharField(max_length=200)
 
 
-@receiver(post_init, sender=Product)
+@receiver(post_save, sender=Product)
 def watermark(sender, instance, **kwargs):
-
     BASE = "http://127.0.0.1:5000/"
     PATH = "C:/Users/guddu/Desktop/Flask-Rest-API-Tutorial/WebProjects-PCToons/git_code/pcadmin/media/"
+    print(instance.img)
 
     os.chdir(PATH)
     ##response = requests.put(BASE + "video/4", {"name": "gaurav", "views": "10", "id": "4", "likes": "10"})
     response = requests.get(BASE + "users")
-    file = (response.json())[6]
+    file = str(instance.img)
+    # (response.json())[6]
     im = Image.open(PATH + file)
     width, height = im.size
 
@@ -65,7 +73,13 @@ def watermark(sender, instance, **kwargs):
 
     # Save watermarked image
 
-    im.save(PATH+file.replace('img', 'watermark'))
+    im.save(PATH + file.replace('img', 'watermark'))
+
+class tags(models.Model):
+    id = models.IntegerField
+    tag_Value = models.CharField(max_length=50)
+
+
 
 
 class User(models.Model):

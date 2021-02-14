@@ -20,5 +20,7 @@ Web hosting:
 flask-mysqldb
 mysqlclient
 PIL
+pip install django-two-factor-auth
+pip install django-multiselectfield
 
 	
