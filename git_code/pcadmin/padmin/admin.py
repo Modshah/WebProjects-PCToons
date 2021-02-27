@@ -17,7 +17,7 @@ class MyAdminSite(AdminSite):
 
 class ImageAdmin(admin.ModelAdmin):
     list_filter = [field.name for field in Product._meta.get_fields()]
-    list_display = [field.name for field in Product._meta.get_fields()]
+    #list_display = [field.name for field in Product._meta.get_fields()]
     search_fields = ['title', 'id', 'image']
 
 
