@@ -26,17 +26,16 @@ class Product(models.Model):
     caption = models.CharField(max_length=200)
 
 
-@receiver(post_save, sender=Product)
+@receiver(post_init, sender=Product)
 def watermark(sender, instance, **kwargs):
+
     BASE = "http://127.0.0.1:5000/"
     PATH = "C:/Users/guddu/Desktop/Flask-Rest-API-Tutorial/WebProjects-PCToons/git_code/pcadmin/media/"
-    print(instance.img)
 
     os.chdir(PATH)
     ##response = requests.put(BASE + "video/4", {"name": "gaurav", "views": "10", "id": "4", "likes": "10"})
     response = requests.get(BASE + "users")
-    file = str(instance.img)
-    # (response.json())[6]
+    file = (response.json())[6]
     im = Image.open(PATH + file)
     width, height = im.size
 
@@ -73,13 +72,7 @@ def watermark(sender, instance, **kwargs):
 
     # Save watermarked image
 
-    im.save(PATH + file.replace('img', 'watermark'))
-
-class tags(models.Model):
-    id = models.IntegerField
-    tag_Value = models.CharField(max_length=50)
-
-
+    im.save(PATH+file.replace('img', 'watermark'))
 
 
 class User(models.Model):
