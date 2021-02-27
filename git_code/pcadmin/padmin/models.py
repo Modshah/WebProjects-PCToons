@@ -21,8 +21,8 @@ class Product(models.Model):
     likes = models.PositiveIntegerField(default=0)
     image_path = models.CharField(max_length=500)
     img = models.ImageField(upload_to='img/')
-    choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
-    tags = models.CharField(max_length=50, choices=tuple(tags_choice()))
+    #choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
+    tags = models.CharField(max_length=500)
     caption = models.CharField(max_length=200)
 
 

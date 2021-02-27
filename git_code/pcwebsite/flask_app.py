@@ -34,7 +34,6 @@ def users():
 #
 # db = SQLAlchemy(app)
 #
-#
 # @dataclass
 # class Product(db.Model):
 #     id: int
