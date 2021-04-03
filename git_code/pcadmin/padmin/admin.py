@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from .models import Product, User, tags
+from .models import Image_Upload, User, tags
 from django.utils.translation import ugettext_lazy
 
 
@@ -16,12 +16,12 @@ class MyAdminSite(AdminSite):
 
 
 class ImageAdmin(admin.ModelAdmin):
-    list_filter = [field.name for field in Product._meta.get_fields()]
-    #list_display = [field.name for field in Product._meta.get_fields()]
-    search_fields = ['title', 'id', 'image']
+    #list_filter = [field.name for field in Image_Upload._meta.get_fields()]
+    list_display = ['image_name', 'img']
+    search_fields = ['image_name']
 
 
 admin_site = MyAdminSite()
-admin.site.register(Product, ImageAdmin)
+admin.site.register(Image_Upload, ImageAdmin)
 admin.site.register(tags)
-admin.site.register(User)
+

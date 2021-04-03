@@ -4,6 +4,8 @@ import requests
 from django import forms
 from django.contrib.auth.models import AbstractUser
 from PIL import Image, ImageDraw, ImageFont
+from django.utils.safestring import mark_safe
+
 from .tag_selection import tags_choice
 from django.contrib.auth.models import User
 import os
@@ -13,20 +15,28 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_init
 from multiselectfield import MultiSelectField
+from django_countries.fields import CountryField
 
 
-class Product(models.Model):
-    title = models.CharField(max_length=200)
+
+class Image_Upload(models.Model):
+    image_name = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
-    likes = models.PositiveIntegerField(default=0)
-    image_path = models.CharField(max_length=500)
+    #like = models.PositiveIntegerField(default=0)
     img = models.ImageField(upload_to='img/')
     #choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
-    tags = models.CharField(max_length=500)
+    tags = models.CharField(max_length=1000)
     caption = models.CharField(max_length=200)
+    countries = models.CharField(max_length=1000)
+    #country = CountryField()
+    #Author= models.CharField(max_length=200)
+
+    #readonly_fields = [..., "image preview"]
 
 
-@receiver(post_save, sender=Product)
+
+
+@receiver(post_save, sender=Image_Upload)
 def watermark(sender, instance, **kwargs):
     BASE = "http://127.0.0.1:5000/"
     PATH = "C:/Users/guddu/Desktop/Flask-Rest-API-Tutorial/WebProjects-PCToons/git_code/pcadmin/media/"
@@ -34,7 +44,7 @@ def watermark(sender, instance, **kwargs):
 
     os.chdir(PATH)
     ##response = requests.put(BASE + "video/4", {"name": "gaurav", "views": "10", "id": "4", "likes": "10"})
-    response = requests.get(BASE + "users")
+    #response = requests.get(BASE + "users")
     file = str(instance.img)
     # (response.json())[6]
     im = Image.open(PATH + file)
