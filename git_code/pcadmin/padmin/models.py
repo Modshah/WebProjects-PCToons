@@ -28,6 +28,7 @@ class Image_Upload(models.Model):
     tags = models.CharField(max_length=1000)
     caption = models.CharField(max_length=200)
     countries = models.CharField(max_length=1000)
+
     #country = CountryField()
     #Author= models.CharField(max_length=200)
 
@@ -49,6 +50,15 @@ def watermark(sender, instance, **kwargs):
     # (response.json())[6]
     im = Image.open(PATH + file)
     width, height = im.size
+    im1 = Image.open(PATH + file)
+    width2, height2 = im.size
+    ##assert isinstance(im.size, object)
+
+
+
+    compresssize = (int(width2 / 10), int(height2 / 10))
+    im1 = im1.resize(compresssize)
+    im1.save(PATH + file.replace('img', 'thumbnail'))
 
     newsize = (int(width / 5), int(height / 5))
     im = im.resize(newsize)
@@ -84,10 +94,39 @@ def watermark(sender, instance, **kwargs):
     # Save watermarked image
 
     im.save(PATH + file.replace('img', 'watermark'))
+    #Image_Watermark = Image_Watermark()
+
+class Image_Watermark(models.Model):
+    image_name = models.CharField(max_length=200)
+    image = models.CharField(max_length=200)
+    #like = models.PositiveIntegerField(default=0)
+    compress_img = models.CharField(max_length=200)
+    watermarked_img = models.CharField(max_length=200)
+    #choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
+    tags = models.CharField(max_length=1000)
+    caption = models.CharField(max_length=200)
+    countries = models.CharField(max_length=1000)
 
 class tags(models.Model):
-    id = models.IntegerField
-    tag_Value = models.CharField(max_length=50)
+    image_id = models.IntegerField
+    tag_Value = models.CharField(max_length=100)
+
+##for exclusion of country
+class img_country(models.Model):
+    image_id = models.IntegerField
+    Country = models.CharField(max_length=100)
+
+class license(models.Model):
+    license = models.CharField(max_length=1000)
+    cost = models.IntegerField
+
+class subscribers(models.Model):
+    subscriber_email = models.CharField(max_length=200)
+    subscriber_name = models.CharField(max_length=200)
+    active_flag = models.CharField(max_length=200)
+
+
+
 
 
 

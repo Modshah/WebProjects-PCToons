@@ -19,7 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from django.contrib.auth.models import User
-from padmin.models import Image_Upload, tags
+from padmin.models import Image_Upload, tags, subscribers
 from rest_framework import routers, serializers, viewsets
 
 
@@ -28,6 +28,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         model = Image_Upload
         fields = [field.name for field in Image_Upload._meta.get_fields()]
 
+class SubscriberSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = subscribers
+        fields = [field.name for field in subscribers._meta.get_fields()]
+
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
@@ -35,10 +40,16 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
+class SubscriberSet(viewsets.ModelViewSet):
+    queryset = subscribers.objects.all()
+    serializer_class = SubscriberSerializer
+
+
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+#router.register(r'users', UserViewSet)
 router.register(r'Image_Upload', UserViewSet)
+router.register(r'subscribers', SubscriberSet)
 
 urlpatterns = [
 
