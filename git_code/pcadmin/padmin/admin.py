@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
-from .models import Image_Upload, User, tags, subscribers
+from .models import Image_Upload, User, tags, subscribers, Products
 from django.utils.translation import ugettext_lazy
 
 
@@ -24,5 +24,6 @@ class ImageAdmin(admin.ModelAdmin):
 admin_site = MyAdminSite()
 admin.site.register(Image_Upload, ImageAdmin)
 admin.site.register(subscribers)
+admin.site.register(Products)
 
 

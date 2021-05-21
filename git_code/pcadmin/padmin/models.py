@@ -16,36 +16,36 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_init
 from multiselectfield import MultiSelectField
 from django_countries.fields import CountryField
+import stripe
 
+from django.conf import settings
 
 
 class Image_Upload(models.Model):
     image_name = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
-    #like = models.PositiveIntegerField(default=0)
+    # like = models.PositiveIntegerField(default=0)
     img = models.ImageField(upload_to='img/')
-    #choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
+    # choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
     tags = models.CharField(max_length=1000)
     caption = models.CharField(max_length=200)
     countries = models.CharField(max_length=1000)
 
-    #country = CountryField()
-    #Author= models.CharField(max_length=200)
+    # country = CountryField()
+    # Author= models.CharField(max_length=200)
 
-    #readonly_fields = [..., "image preview"]
-
-
+    # readonly_fields = [..., "image preview"]
 
 
 @receiver(post_save, sender=Image_Upload)
 def watermark(sender, instance, **kwargs):
     BASE = "http://127.0.0.1:5000/"
-    PATH = "C:/Users/guddu/Desktop/Flask-Rest-API-Tutorial/WebProjects-PCToons/git_code/pcadmin/media/"
+    PATH = "C:/Users/might/Desktop/Flask-Rest-API-Tutorial/WebProjects-PCToons/git_code/pcadmin/media/"
     print(instance.img)
 
     os.chdir(PATH)
     ##response = requests.put(BASE + "video/4", {"name": "gaurav", "views": "10", "id": "4", "likes": "10"})
-    #response = requests.get(BASE + "users")
+    # response = requests.get(BASE + "users")
     file = str(instance.img)
     # (response.json())[6]
     im = Image.open(PATH + file)
@@ -53,8 +53,6 @@ def watermark(sender, instance, **kwargs):
     im1 = Image.open(PATH + file)
     width2, height2 = im.size
     ##assert isinstance(im.size, object)
-
-
 
     compresssize = (int(width2 / 10), int(height2 / 10))
     im1 = im1.resize(compresssize)
@@ -94,31 +92,100 @@ def watermark(sender, instance, **kwargs):
     # Save watermarked image
 
     im.save(PATH + file.replace('img', 'watermark'))
-    #Image_Watermark = Image_Watermark()
+    if not (Image_Watermark.objects.filter(pk=instance.id).exists()):
+        Image_Watermark.objects.create(
+            id=instance.id,
+            image_name=instance.image_name,
+            image=instance.image,
+            compress_img=file.replace('img', 'thumbnail'),
+            watermarked_img=file.replace('img', 'watermark'),
+            tags=instance.tags,
+            caption=instance.caption,
+            countries=instance.caption
+        )
+
+    else:
+        Image_Watermark.objects.filter(pk=instance.id).update(
+            image_name=instance.image_name,
+            image=instance.image,
+            compress_img='http://127.0.0.1:8000/' + file.replace('img', 'media/thumbnail'),
+            watermarked_img='http://127.0.0.1:8000/'+file.replace('img', 'media/watermark'),
+            tags=instance.tags,
+            caption=instance.caption,
+            countries=instance.caption
+        )
+
+    if not (tags.objects.filter(image_id=instance.id).exists()):
+
+        tag_var = str(instance.tags)
+        #assert isinstance(tag_var.split, object)
+        for i in tag_var.split():
+            tags.objects.create(
+                tag_Value=i,
+                image_id=instance.id
+
+            )
+    else:
+        tags.objects.filter(image_id=instance.id).delete()
+        tag_var = str(instance.tags)
+        # assert isinstance(tag_var.split, object)
+        for i in tag_var.split():
+            tags.objects.create(
+                tag_Value=i,
+                image_id=instance.id
+
+            )
+    if not (img_country.objects.filter(image_id=instance.id).exists()):
+
+        tag_var = str(instance.countries)
+        #assert isinstance(tag_var.split, object)
+        for i in tag_var.split():
+            img_country.objects.create(
+
+                Country=i,
+                image_id=instance.id
+
+            )
+    else:
+        img_country.objects.filter(image_id=instance.id).delete()
+        tag_var = str(instance.countries)
+        # assert isinstance(tag_var.split, object)
+        for i in tag_var.split():
+            img_country.objects.create(
+
+                Country=i,
+                image_id=instance.id
+
+            )
+
 
 class Image_Watermark(models.Model):
     image_name = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
-    #like = models.PositiveIntegerField(default=0)
+    # like = models.PositiveIntegerField(default=0)
     compress_img = models.CharField(max_length=200)
     watermarked_img = models.CharField(max_length=200)
-    #choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
+    # choice = forms.MultipleChoiceField(choices=tuple(tags_choice()))
     tags = models.CharField(max_length=1000)
     caption = models.CharField(max_length=200)
     countries = models.CharField(max_length=1000)
 
+
 class tags(models.Model):
-    image_id = models.IntegerField
+    image_id = models.IntegerField()
     tag_Value = models.CharField(max_length=100)
+
 
 ##for exclusion of country
 class img_country(models.Model):
-    image_id = models.IntegerField
+    image_id = models.IntegerField()
     Country = models.CharField(max_length=100)
 
 class license(models.Model):
-    license = models.CharField(max_length=1000)
-    cost = models.IntegerField
+    licenses = models.CharField(max_length=1000)
+    licenses_desc = models.CharField(max_length=16383)
+    cost = models.IntegerField()
+
 
 class subscribers(models.Model):
     subscriber_email = models.CharField(max_length=200)
@@ -126,9 +193,17 @@ class subscribers(models.Model):
     active_flag = models.CharField(max_length=200)
 
 
+class Products(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.IntegerField(default=0)  # cents
+    file = models.FileField(upload_to="product_files/", blank=True, null=True)
+    url = models.URLField()
 
+    def __str__(self):
+        return self.name
 
-
+    def get_display_price(self):
+        return "{0:.2f}".format(self.price / 100)
 
 
 class User(models.Model):

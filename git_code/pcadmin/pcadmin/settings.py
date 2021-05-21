@@ -11,11 +11,13 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from django.contrib.admin import AdminSite
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR1 = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
@@ -27,6 +29,14 @@ SECRET_KEY = 'tc77y=$k8pta1w%lw@&0)pfor7l!z=72s6av)svxhxq^(bq3ps'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '587'
+EMAIL_HOST_USER = 'pareshtoondjnago@gmail.com'
+EMAIL_HOST_PASSWORD = "pareshtoon21"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 # Application definition
 
@@ -59,7 +69,7 @@ ROOT_URLCONF = 'pcadmin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR1 / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -141,4 +151,10 @@ AdminSite.site_header = 'PareshCartoon'
 STATIC_URL = '/static/'
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
+STRIPE_SECRET_KEY = 'sk_test_51Ifee9SI2ZN9y4H8mxWLXWEYNe4Fo85N9jZbwkxrLj7AZZuJSI45GbBgHziPJSvUNXPG7Dr5SfFnk0hhladLRhhv00HHNXY8PY'
+STRIPE_PUBLIC_KEY = 'pk_test_51Ifee9SI2ZN9y4H8fFEzGWCxRRmAezNJyXAg3IkzEiDuxs3qzHAKTr3bHSrrbFY6sf3ehRdYqEPyOPynElQ4S6ie00AL1KaY9W'
+STRIPE_WEBHOOK_SECRET = "whsec_Vm2aCveQCa6YUSjVS4Y7cEu8pOIhkvKe"
+# Current Subscription Price
+SUBSCRIPTION_PRICE = 1500
 
